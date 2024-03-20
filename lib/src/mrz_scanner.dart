@@ -10,10 +10,12 @@ class MRZScanner extends StatefulWidget {
     required this.onSuccess,
     this.initialDirection = CameraLensDirection.back,
     this.showOverlay = true,
+   required this.getImage,
   }) : super(key: controller);
   final Function(MRZResult mrzResult, List<String> lines) onSuccess;
   final CameraLensDirection initialDirection;
   final bool showOverlay;
+  final Function(InputImage image) getImage;
   @override
   // ignore: library_private_types_in_public_api
   MRZScannerState createState() => MRZScannerState();
@@ -55,10 +57,10 @@ class MRZScannerState extends State<MRZScanner> {
   }
 
   Future<void> _processImage(InputImage inputImage) async {
+    widget.getImage(inputImage);
     if (!_canProcess) return;
     if (_isBusy) return;
     _isBusy = true;
-
     final recognizedText = await _textRecognizer.processImage(inputImage);
     String fullText = recognizedText.text;
     String trimmedText = fullText.replaceAll(' ', '');
