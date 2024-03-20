@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:mrz_scanner/mrz_scanner.dart';
@@ -15,7 +18,7 @@ class MRZScanner extends StatefulWidget {
   final Function(MRZResult mrzResult, List<String> lines) onSuccess;
   final CameraLensDirection initialDirection;
   final bool showOverlay;
-  final Function(InputImage image) getImage;
+  final Function(File image) getImage;
   @override
   // ignore: library_private_types_in_public_api
   MRZScannerState createState() => MRZScannerState();
@@ -57,7 +60,7 @@ class MRZScannerState extends State<MRZScanner> {
   }
 
   Future<void> _processImage(InputImage inputImage) async {
-    widget.getImage(inputImage);
+
     if (!_canProcess) return;
     if (_isBusy) return;
     _isBusy = true;
@@ -76,8 +79,28 @@ class MRZScannerState extends State<MRZScanner> {
 
     if (result != null) {
       _parseScannedText([...result]);
+      File? scannedImage;
+      if (inputImage.bytes != null) {
+        scannedImage = await convertBytesToFile(inputImage.bytes!);
+      }
+      if(scannedImage!=null){
+        widget.getImage(scannedImage);
+      }
     } else {
       _isBusy = false;
     }
+  }
+  Future<File> convertBytesToFile(Uint8List bytes) async {
+    // Create a temporary file path
+    String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+    String fileName = 'image_$timestamp.png';
+    String tempPath = '${Directory.systemTemp.path}/$fileName';
+
+    // Write the bytes to the temporary file
+    File tempFile = File(tempPath);
+    await tempFile.writeAsBytes(bytes);
+
+    // Return the File object
+    return tempFile;
   }
 }
