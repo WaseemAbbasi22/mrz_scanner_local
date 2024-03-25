@@ -13,12 +13,14 @@ class MRZScanner extends StatefulWidget {
     required this.onSuccess,
     this.initialDirection = CameraLensDirection.back,
     this.showOverlay = true,
+    this.imageFile,
    required this.getImage,
   }) : super(key: controller);
   final Function(MRZResult mrzResult, List<String> lines) onSuccess;
   final CameraLensDirection initialDirection;
   final bool showOverlay;
-  final Function(File image) getImage;
+  final File ?imageFile;
+  final Function(Uint8List imageBytes) getImage;
   @override
   // ignore: library_private_types_in_public_api
   MRZScannerState createState() => MRZScannerState();
@@ -79,12 +81,8 @@ class MRZScannerState extends State<MRZScanner> {
 
     if (result != null) {
       _parseScannedText([...result]);
-      File? scannedImage;
       if (inputImage.bytes != null) {
-        scannedImage = await convertBytesToFile(inputImage.bytes!);
-      }
-      if(scannedImage!=null){
-        widget.getImage(scannedImage);
+        widget.getImage(inputImage.bytes!);
       }
     } else {
       _isBusy = false;
