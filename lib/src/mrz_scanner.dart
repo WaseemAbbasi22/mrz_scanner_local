@@ -92,6 +92,7 @@ class MRZScannerState extends State<MRZScanner> {
 }
 
 class MRZScannerService {
+  MRZScannerService();
   final TextRecognizer _textRecognizer = TextRecognizer();
 
   Future<MRZResult?> processImage(File image) async {
