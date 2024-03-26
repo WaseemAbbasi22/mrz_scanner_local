@@ -88,17 +88,32 @@ class MRZScannerState extends State<MRZScanner> {
       _isBusy = false;
     }
   }
-  Future<File> convertBytesToFile(Uint8List bytes) async {
-    // Create a temporary file path
-    String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-    String fileName = 'image_$timestamp.png';
-    String tempPath = '${Directory.systemTemp.path}/$fileName';
+  Future<MRZResult?> processImageFromFile(File image) async {
+    try {
+      InputImage inputImg = InputImage.fromFile(image);
+      await _textRecognizer.processImage(inputImg);
+      final recognisedText =await _textRecognizer.processImage(inputImg);
+      String fullText = recognisedText.text;
+      String trimmedText = fullText.replaceAll(' ', '');
+      List allText = trimmedText.split('\n');
+      List<String> ableToScanText = [];
+      for (var e in allText) {
+        if (MRZHelper.testTextLine(e).isNotEmpty) {
+          ableToScanText.add(MRZHelper.testTextLine(e));
+        }
+      }
+      List<String>? result = MRZHelper.getFinalListToParse([...ableToScanText]);
+      if (result != null) {
 
-    // Write the bytes to the temporary file
-    File tempFile = File(tempPath);
-    await tempFile.writeAsBytes(bytes);
-
-    // Return the File object
-    return tempFile;
+        return MRZParser.parse(result);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error processing image: $e');
+      return null;
+    }
   }
+
 }
+
