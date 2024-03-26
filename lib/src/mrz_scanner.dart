@@ -88,7 +88,13 @@ class MRZScannerState extends State<MRZScanner> {
       _isBusy = false;
     }
   }
-  Future<MRZResult?> processImageFromFile(File image) async {
+
+}
+
+class MRZScannerService {
+  final TextRecognizer _textRecognizer = TextRecognizer();
+
+  Future<MRZResult?> processImage(File image) async {
     try {
       InputImage inputImg = InputImage.fromFile(image);
       await _textRecognizer.processImage(inputImg);
@@ -114,6 +120,4 @@ class MRZScannerState extends State<MRZScanner> {
       return null;
     }
   }
-
 }
-
