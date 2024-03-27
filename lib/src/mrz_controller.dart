@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:mrz_scanner/mrz_scanner.dart';
+part of mrz_scanner;
 
 typedef MRZController = GlobalKey<MRZScannerState>;

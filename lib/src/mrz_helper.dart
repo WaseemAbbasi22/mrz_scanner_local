@@ -1,7 +1,4 @@
-import 'dart:io';
-
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:mrz_parser/mrz_parser.dart';
+part of mrz_scanner;
 
 class MRZHelper {
 
